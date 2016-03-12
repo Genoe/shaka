@@ -16,7 +16,6 @@ module.exports = function(req, res, next) {
   if (token || key) {
     try {
       var decoded = jwt.decode(token, require('../config/secret.js')());
-
       if (decoded.exp <= Date.now()) {
         res.status(400);
         res.json({
@@ -30,7 +29,6 @@ module.exports = function(req, res, next) {
 
       var dbUser = validateUser(key); // The key would be the logged in user's username
       if (dbUser) {
-
 
         if ((req.url.indexOf('admin') >= 0 && dbUser.role == 'admin') || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/v1/') >= 0)) {
           next(); // To move to next middleware

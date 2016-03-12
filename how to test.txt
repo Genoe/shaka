@@ -1,3 +1,21 @@
 curl --data "{\"username\" : \"arvind@myapp.com\", \"password\" : \"pass123\"}" -H "content-type:application/json" http://localhost:3000/login
 
+curl -H "content-type:application/json" -H "x-access-token:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgxNzY1NDI3NjJ9._xb5UL3iH03wYCBHkp_Jw25IIICMir_A51sXVuP4nL0" -H "x-key:arvind@myapp.com" http://localhost:3000/api/v1/product
+
 {"username":"arvind@myapp.com", "password":"pass123"}  for postman. use POST, raw (body), JSON
+
+
+
+curl -H “content-type:application/json” -H “x-access-token:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgxNzQ0MDkyMzJ9.UWv-i4aKXeSnUPnAJYK2s-4TbWucGOtg18s2nfdP7DA” -H “x-key:arvind@myapp.com” http://localhost:3000/api/v1/admin/users
+
+
+
+{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgxNzUwNzYzNTd9.zlBFcV1iqLtghVjXu4dHsLJ-kCJlhgXFfsWIJd8tlFM",
+  "expires": 1458175076357,
+  "user": {
+    "name": "arvind",
+    "role": "admin",
+    "username": "arvind@myapp.com"
+  }
+}
