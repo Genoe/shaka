@@ -1,4 +1,5 @@
 var DB = require('../modules/sqlPool.js');
+var bcrypt = require('bcrypt');
 
 var users = {
 
@@ -33,13 +34,27 @@ var users = {
   },
 
   create: function(req, res) {
-    DB.query('INSERT INTO users SET ?', {first_name: req.body.first_name}, function(error, result) {
-      if (!error) {
-        res.json(true);
-      } else {
-        console.log("Error creating user: " + error);
-      }
-    })
+
+    bcrypt.genSalt(10, function(error, salt) {
+      bcrypt.hash(req.body.password, salt, function(err, hash) {
+        DB.query('INSERT INTO users SET ?', {
+          first_name: DB.escape(req.body.first_name),
+          last_name: DB.escape(req.body.last_name),
+          username: DB.escape(req.body.username),
+          email: DB.escape(req.body.email),
+          password: hash
+        }, function(error, result) {
+          if (!error) {
+            res.json(true);
+          } else {
+            console.log("Error creating user: " + error);
+            res.json(false);
+          }
+        })
+      });
+    });
+
+
   },
 
   update: function(req, res) {

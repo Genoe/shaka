@@ -1,4 +1,7 @@
 var jwt = require('jwt-simple');
+var DB = require('../modules/sqlPool.js');
+var bcrypt = require('bcrypt');
+
 var auth = {
   login: function(req, res) {
     var username = req.body.username || '';
@@ -11,13 +14,15 @@ var auth = {
       });
       return;
     }
+
     // Fire a query to your DB and check if the credentials are valid
     var dbUserObj = auth.validate(username, password);
+    console.log("WHAT IS DBUSERObj???!: \n" + dbUserObj);
     if (!dbUserObj) { // If authentication fails, we send a 401 back
       res.status(401);
       res.json({
       "status": 401,
-      "message": "Invalid credentials"
+      "message": "Invalid credentials!"
       });
       return;
     }
@@ -26,15 +31,24 @@ var auth = {
       // and dispatch it to the client
       res.json(genToken(dbUserObj));
       }
+
+
   },
   validate: function(username, password) {
-    // spoofing the DB response for simplicity
-    var dbUserObj = { // spoofing a userobject from the DB.
-      name: 'arvind',
-      role: 'admin',
-      username: 'arvind@myapp.com'
-    };
-    return dbUserObj;
+    DB.query('SELECT * FROM users WHERE username = ' + DB.escape(username), function(error, result) {
+      bcrypt.compare(password, result[0].password, function(error, match) {
+        if(!error) {
+          if(match) {
+            console.log("BELOW IS THE RESULT OF THE QUERY: \n" + result[0].password);
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false; //TODO error should be HTTP 5xx but wrong credentials should be 401
+        }
+      });
+    });
   },
   validateUser: function(username) {
     // spoofing the DB response for simplicity
