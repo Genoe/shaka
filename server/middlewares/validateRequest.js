@@ -1,5 +1,6 @@
 var jwt = require('jwt-simple');
-var validateUser = require('../routes/auth').validateUser;
+//var validateUser = require('../routes/auth').validateUser;
+var DB = require('../modules/sqlPool.js');
 
 module.exports = function(req, res, next) {
 
@@ -27,28 +28,30 @@ module.exports = function(req, res, next) {
 
       // Authorize the user to see if s/he can access our resources
 
-      var dbUser = validateUser(key); // The key would be the logged in user's username
-      if (dbUser) {
-
-        if ((req.url.indexOf('admin') >= 0 && dbUser.role == 'admin') || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/v1/') >= 0)) {
-          next(); // To move to next middleware
+      //var dbUser = validateUser(key); // The key would be the logged in user's username
+      DB.query('SELECT username, role FROM users WHERE username = ' + DB.escape(key), function(error, results) {
+        if (results.length > 0) {
+          if ((req.url.indexOf('admin') >= 0 && results[0].role == 'admin') || (req.url.indexOf('admin') < 0 && req.url.indexOf('/api/v1/') >= 0)) {
+            next(); // To move to next middleware
+          } else {
+            res.status(403);
+            res.json({
+              "status": 403,
+              "message": "Not Authorized"
+            });
+            return;
+          }
         } else {
-          res.status(403);
+          // No user with this name exists, respond back with a 401
+          res.status(401);
           res.json({
-            "status": 403,
-            "message": "Not Authorized"
+            "status": 401,
+            "message": "Invalid User"
           });
           return;
         }
-      } else {
-        // No user with this name exists, respond back with a 401
-        res.status(401);
-        res.json({
-          "status": 401,
-          "message": "Invalid User"
-        });
-        return;
-      }
+      });
+
 
     } catch (err) {
       res.status(500);
