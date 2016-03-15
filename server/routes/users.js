@@ -38,10 +38,10 @@ var users = {
     bcrypt.genSalt(10, function(error, salt) {
       bcrypt.hash(req.body.password, salt, function(err, hash) {
         DB.query('INSERT INTO users SET ?', {
-          first_name: DB.escape(req.body.first_name),
-          last_name: DB.escape(req.body.last_name),
-          username: DB.escape(req.body.username),
-          email: DB.escape(req.body.email),
+          first_name: req.body.first_name,
+          last_name: req.body.last_name,
+          username: req.body.username,
+          email: req.body.email,
           password: hash
         }, function(error, result) {
           if (!error) {

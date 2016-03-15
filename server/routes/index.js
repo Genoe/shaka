@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var auth = require('./auth.js');
-var products = require('./drops.js');
+var drops = require('./drops.js');
 var user = require('./users.js');
 
 /*
@@ -13,11 +13,11 @@ router.post('/login', auth.login);
 /*
  * Routes that can be accessed only by autheticated users
  */
-router.get('/api/v1/drops', products.getAll);
-router.get('/api/v1/drop/:id', products.getOne);
-router.post('/api/v1/drop/', products.create);
-router.put('/api/v1/drop/:id', products.update);
-router.delete('/api/v1/drop/:id', products.delete);
+router.get('/api/v1/drops', drops.getAll);
+router.get('/api/v1/drop/:id', drops.getOne);
+router.post('/api/v1/drop/', drops.create);
+router.put('/api/v1/drop/:id', drops.update);
+router.delete('/api/v1/drop/:id', drops.delete);
 
 /*
  * Routes that can be accessed only by authenticated & authorized users
