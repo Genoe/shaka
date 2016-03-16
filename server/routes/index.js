@@ -18,6 +18,7 @@ router.get('/api/v1/drop/:id', drops.getOne);
 router.post('/api/v1/drop/', drops.create);
 router.put('/api/v1/drop/:id', drops.update);
 router.delete('/api/v1/drop/:id', drops.delete);
+router.post('/api/v1/drop/range', drops.getRange);
 
 /*
  * Routes that can be accessed only by authenticated & authorized users

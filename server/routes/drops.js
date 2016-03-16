@@ -42,6 +42,19 @@ var drops = {
     });
   },
 
+  getRange: function(req, res) {
+    DB.query(`SELECT *, ( 3959 * acos( cos( radians(${req.body.latitude}) ) * cos( radians( latitude ) ) * \
+    cos( radians( longitude ) - radians(${req.body.longitude}) ) + sin( radians(${req.body.latitude}) ) * sin( radians( latitude ) ) ) ) \
+    AS distance FROM events HAVING distance < ${req.body.range} ORDER BY distance LIMIT 0 , 20;`, function(error, result) {
+      if (!error) {
+        res.json(result);
+      } else {
+        console.log("Error getting filtered set of locations: " + error);
+        res.json("There was a problem getting the results");
+      }
+    });
+  },
+
   update: function(req, res) {
     var updateProduct = req.body;
     var id = req.params.id;
