@@ -8,7 +8,6 @@ var pool = mysql.createPool({
   host     : 'localhost', //ignored. Using socketPath
   user     : 'root',
   password : 'Blue55',
-  socketPath: "/opt/lampp/var/mysql/mysql.sock",
   database : 'shaka',
   debug    : 'false'
 });

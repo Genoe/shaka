@@ -9,6 +9,7 @@ var user = require('./users.js');
  * Routes that can be accessed by any one
  */
 router.post('/login', auth.login);
+router.post('/register', user.create);
 
 /*
  * Routes that can be accessed only by autheticated users
@@ -25,7 +26,7 @@ router.post('/api/v1/drop/range', drops.getRange);
  */
 router.get('/api/v1/admin/users', user.getAll);
 router.get('/api/v1/admin/user/:id', user.getOne);
-router.post('/api/v1/admin/user/', user.create);
+//router.post('/api/v1/admin/user/', user.create);
 router.put('/api/v1/admin/user/:id', user.update);
 router.delete('/api/v1/admin/user/:id', user.delete);
 
