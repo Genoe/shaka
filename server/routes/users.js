@@ -76,12 +76,12 @@ var users = {
 };
 
 function validateInput(username, password, email, firstName, lastName) {
-  if (validator.isAlpha(username) &&
+  if ((validator.isAlpha(username) || validator.isAlphanumeric(username)) &&
     validator.isLength(username, {
       min: 4,
       max: 20
     }) &&
-    validator.isAlphanumberic(password) &&
+    validator.isAlphanumeric(password) &&
     validator.isLength(password, {
       min: 8,
       max: 60
