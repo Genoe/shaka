@@ -10,6 +10,7 @@ var user = require('./users.js');
  */
 router.post('/login', auth.login);
 router.post('/register', user.create);
+router.post('/resetpassword', user.sendPasswordLink);
 
 /*
  * Routes that can be accessed only by autheticated users

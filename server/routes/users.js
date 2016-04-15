@@ -1,6 +1,9 @@
 var DB = require('../modules/sqlPool.js');
 var bcrypt = require('bcrypt');
 var validator = require('validator');
+var crypto = require('crypto');
+var AWS = require('aws-sdk');
+var emailParams = require('../config/passwordResetEmail.js');
 
 var users = {
 
@@ -60,18 +63,53 @@ var users = {
     }
 
   },
+/*
+Use when a user wants to reset their password. A hash is stored in the database with a timestamp/expiration
+and an email is sent to the user.
+*/
+  sendPasswordLink: function (req, res) {
+    DB.query('SELECT * FROM users WHERE email = ' + DB.escape(req.body.email), function(error, userResult) {
+      if (!error && results.length > 0) {
+        var token = crypto.randomBytes(512).toString('hex'); //convert to hex to make it url safe
+        DB.query('INSERT INTO pass_reset_tokens SET ? ', {
+          user_id: userResult[0].id,
+          token: token
+        }, function(error, result) {
+          if (!error) {
+            //send email
+            var ses = new AWS.SES();
+            ses.sendEmail(emailParams, function(error, data) {
+              if (error) {
+                console.log("Problem with sending email: " + error + "\n" + error.stack);
+                res.json(false);
+              } else {
+                res.json(true);
+              }
+            });
+          } else {
+            console.log("Error storing token in DB: " + error);
+            res.json(false);
+          }
+        });
+      } else {
+        console.log("Problem finding user: " + error);
+        res.json("Could not find user");
+      }
+    });
+  },
 
-  update: function(req, res) {
-    var updateuser = req.body;
-    var id = req.params.id;
-    data[id] = updateuser // Spoof a DB call
-    res.json(updateuser);
+  changePassword: function(req, res) {
+
   },
 
   delete: function(req, res) {
     var id = req.params.id;
     data.splice(id, 1) // Spoof a DB call
     res.json(true);
+  }
+
+  update: function(req,res) {
+    
   }
 };
 
