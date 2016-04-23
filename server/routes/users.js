@@ -4,6 +4,7 @@ var validator = require('validator');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var emailParams = require('../config/passwordResetEmail.js');
+AWS.config.update({region: 'us-west-2'});
 
 var users = {
 
@@ -67,10 +68,11 @@ var users = {
 Use when a user wants to reset their password. A hash is stored in the database with a timestamp/expiration
 and an email is sent to the user.
 */
+
   sendPasswordLink: function (req, res) {
     DB.query('SELECT * FROM users WHERE email = ' + DB.escape(req.body.email), function(error, userResult) {
-      if (!error && results.length > 0) {
-        var token = crypto.randomBytes(512).toString('hex'); //convert to hex to make it url safe
+      if (!error && userResult.length > 0) {
+        var token = crypto.randomBytes(128).toString('hex'); //convert to hex to make it url safe
         DB.query('INSERT INTO pass_reset_tokens SET ? ', {
           user_id: userResult[0].id,
           token: token
@@ -78,6 +80,7 @@ and an email is sent to the user.
           if (!error) {
             //send email
             var ses = new AWS.SES();
+            emailParams.Message.Body.Html.Data = "Click the link to reset your password: http://ec2-52-89-103-111.us-west-2.compute.amazonaws.com:3000/changepassword:" + token;
             ses.sendEmail(emailParams, function(error, data) {
               if (error) {
                 console.log("Problem with sending email: " + error + "\n" + error.stack);
@@ -99,17 +102,41 @@ and an email is sent to the user.
   },
 
   changePassword: function(req, res) {
-
+    var token = req.params.token;
+    var password = req.body.password;
+    if (validator.isAlphanumeric(password) && validator.isLength(password, { min: 8, max: 60 })) {
+      DB.query('SELECT user_id, creation_time FROM pass_reset_tokens WHERE token = ' + DB.escape(token) + ' AND creation_time > NOW() - 1800', function(error, result) {
+        if (!error && result.length > 0) {
+          bcrypt.genSalt(10, function(error, salt) {
+            bcrypt.hash(password, salt, function(err, hash) {
+              DB.query('UPDATE users SET password = ' + DB.escape(hash) + ' WHERE id = ' + result[0].user_id, function(error, result) {
+                if (!error) {
+                  res.json(true);
+                } else {
+                  console.log("Error changing password: " + error);
+                  res.json(false);
+                }
+              });
+            });
+          });
+        } else {
+          res.json(false);
+          console.log("Problem getting token or not found" + error);
+        }
+      })
+    } else {
+      res.json("Invalid Input");
+    }
   },
 
   delete: function(req, res) {
     var id = req.params.id;
     data.splice(id, 1) // Spoof a DB call
     res.json(true);
-  }
+  },
 
   update: function(req,res) {
-    
+
   }
 };
 
