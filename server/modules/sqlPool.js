@@ -7,7 +7,7 @@ var pool = mysql.createPool({
   connectionLimit: 100, //will need aditional testing. Arbitrary number at this point
   host     : 'localhost', //ignored. Using socketPath
   user     : 'root',
-  password : 'Blue55',
+  password : 'xxxx',
   database : 'shaka',
   debug    : 'false'
 });
