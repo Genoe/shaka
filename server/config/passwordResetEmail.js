@@ -2,7 +2,7 @@
 var params = {
   Destination: { /* required */
     ToAddresses: [
-      'wweisensel@gmail.com'
+      '*******@gmail.com'
     ]
   },
   Message: { /* required */
@@ -21,7 +21,7 @@ var params = {
       Charset: 'UTF-8'
     }
   },
-  Source: 'wweisensel@gmail.com', /* required */
+  Source: '******@gmail.com', /* required */
 };
 
 module.exports = params;
